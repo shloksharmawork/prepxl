@@ -1,0 +1,6 @@
+application.properties
+com\example\demo\DemoApplication.class
+com\example\demo\service\GeminiService.class
+com\example\demo\service\TranscriptionService.class
+com\example\demo\handler\AudioWebSocketHandler.class
+com\example\demo\config\WebSocketConfig.class
