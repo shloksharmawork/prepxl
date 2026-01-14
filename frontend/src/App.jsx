@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import CircularVisualizer from './components/CircularVisualizer';
 import { useAudioAnalyzer } from './hooks/useAudioAnalyzer';
 
-const WS_URL = 'ws://localhost:8080/transcribe';
+const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/transcribe';
 
 function App() {
   const [transcription, setTranscription] = useState('');
