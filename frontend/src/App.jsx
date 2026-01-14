@@ -62,7 +62,7 @@ function App() {
     }
   };
 
-  const { startListening, stopListening, isListening, analyser, error: micError } = useAudioAnalyzer(onAudioData);
+  const { startListening, stopListening, simulateAudio, isListening, analyser, error: micError } = useAudioAnalyzer(onAudioData);
 
   const handleStart = async () => {
     try {
@@ -71,6 +71,11 @@ function App() {
     } catch (e) {
       console.error('Start failed', e);
     }
+  };
+
+  const handleSimulation = () => {
+    simulateAudio();
+    connectWebSocket();
   };
 
   const handleStop = () => {
@@ -127,14 +132,27 @@ function App() {
             {micError && (
               <div style={{ marginTop: '1rem', textAlign: 'center', background: 'rgba(255,0,0,0.1)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,0,0,0.2)' }}>
                 <p style={{ color: '#ff6b6b', fontSize: '0.95rem', fontWeight: '600', marginBottom: '0.5rem' }}>
-                  ⚠️ access denied
+                  ⚠️ {micError.name || 'Access Denied'}
                 </p>
                 <p style={{ color: '#e2e8f0', fontSize: '0.85rem' }}>
-                  Since you enabled browser permission, this is likely blocked by <strong>Windows/System Settings</strong>.
+                  Your system is strictly blocking the microphone.
                 </p>
-                <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.5rem' }}>
-                  Go to <em>Settings {'>'} Privacy {'>'} Microphone</em> and allow desktop apps.
-                </p>
+
+                <button
+                  onClick={handleSimulation}
+                  style={{
+                    marginTop: '0.75rem',
+                    padding: '0.5rem 1rem',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: '#fff',
+                    borderRadius: '50px',
+                    cursor: 'pointer',
+                    fontSize: '0.8rem'
+                  }}
+                >
+                  Start Simulation Mode (No Mic)
+                </button>
               </div>
             )}
           </div>

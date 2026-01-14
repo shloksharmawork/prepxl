@@ -55,9 +55,47 @@ export const useAudioAnalyzer = (onAudioData) => {
             setIsListening(true);
         } catch (err) {
             console.error('Error accessing microphone:', err);
-            setError(err.message);
+            setError(err); // Store full error object
             setIsListening(false);
+            throw err;
         }
+    };
+
+    // Simulation for demo purposes (bypassing mic)
+    const simulateAudio = () => {
+        setError(null);
+        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)({
+            sampleRate: 16000,
+        });
+
+        const analyser = audioContextRef.current.createAnalyser();
+        analyser.fftSize = 256;
+        analyserRef.current = analyser;
+
+        const oscillator = audioContextRef.current.createOscillator();
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, audioContextRef.current.currentTime);
+
+        // Connect to analyser but NOT to destination (silent to user, visible in analyzer)
+        oscillator.connect(analyser);
+        oscillator.start();
+
+        // Fake data pump
+        const interval = setInterval(() => {
+            // Generate silent/dummy PCM data just to keep WebSocket alive if needed
+            const silentData = new Uint8Array(2048).fill(0);
+            if (onAudioData) onAudioData(silentData);
+        }, 100);
+
+        streamRef.current = {
+            getTracks: () => [],
+            stop: () => {
+                oscillator.stop();
+                clearInterval(interval);
+            }
+        }; // Mock stream object
+
+        setIsListening(true);
     };
 
     const stopListening = () => {
@@ -79,6 +117,7 @@ export const useAudioAnalyzer = (onAudioData) => {
     return {
         startListening,
         stopListening,
+        simulateAudio,
         isListening,
         analyser: analyserRef.current,
         error

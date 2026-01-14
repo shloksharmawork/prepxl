@@ -22,7 +22,8 @@ body {
   font-family: 'Outfit', sans-serif;
   background-color: var(--bg-deep);
   color: var(--text-main);
-  height: 100vh;
+  height: 100dvh;
+  /* Use dynamic viewport height */
   width: 100vw;
   overflow: hidden;
   display: flex;
