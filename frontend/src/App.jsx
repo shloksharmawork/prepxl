@@ -7,7 +7,6 @@ const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/transcribe';
 function App() {
   const [transcription, setTranscription] = useState('');
   const [status, setStatus] = useState('disconnected');
-  const [reconnectCount, setReconnectCount] = useState(0);
   const websocketRef = useRef(null);
   const transcriptionEndRef = useRef(null);
 
@@ -24,18 +23,15 @@ function App() {
     ws.onopen = () => {
       console.log('WebSocket Connected');
       setStatus('connected');
-      setReconnectCount(0);
     };
 
     ws.onmessage = (event) => {
-      // Append incremental text
       setTranscription(prev => prev + ' ' + event.data);
     };
 
     ws.onclose = () => {
       console.log('WebSocket Closed');
       setStatus('disconnected');
-      // Simple exponential backoff or retry logic could go here
     };
 
     ws.onerror = (error) => {
@@ -70,83 +66,57 @@ function App() {
   };
 
   return (
-    <div className="relative min-h-screen text-white font-sans flex flex-col items-center justify-center p-8 overflow-hidden">
-      {/* Premium Background Visualizer */}
-      <CircularVisualizer analyser={analyser} isListening={isListening} />
+    <div className="app-container">
+      {/* Background Visualizer */}
+      <div className="visualizer-wrapper">
+        <CircularVisualizer analyser={analyser} isListening={isListening} />
+      </div>
 
-      {/* Main UI Overlay */}
-      <main className="z-10 w-full max-w-2xl flex flex-col items-center gap-12">
-        <header className="text-center">
-          <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-blue-600 mb-2">
-            Prepxl Voice
-          </h1>
-          <p className="text-slate-400 flex items-center justify-center gap-2">
-            {status === 'connected' ? (
-              <span className="flex items-center gap-1.5 text-emerald-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                Live Transcription
-              </span>
-            ) : status === 'error' ? (
-              <span className="text-rose-400">Connection Error</span>
-            ) : (
-              'Ready to transcribe'
-            )}
-          </p>
+      {/* Glassmorphism Main UI */}
+      <main className="ui-main">
+        <header className="header-group">
+          <h1 className="title">Prepxl Voice</h1>
+          <div className="status-indicator">
+            <span className={`dot ${status === 'connected' ? 'connected' : ''}`} />
+            <span>
+              {status === 'connected' ? 'Live Transcription' :
+                status === 'error' ? 'Connection Error' :
+                  'Ready to stream'}
+            </span>
+          </div>
         </header>
 
-        {/* Transcription Display */}
-        <div className="w-full h-48 bg-slate-900/50 backdrop-blur-md rounded-2xl border border-white/10 p-6 overflow-y-auto shadow-2xl custom-scrollbar">
+        <section className="transcription-box">
           {transcription ? (
-            <p className="text-lg leading-relaxed text-slate-100 italic transition-all duration-300">
-              "{transcription.trim()}"
+            <p className="transcription-content">
+              {transcription.trim()}
             </p>
           ) : (
-            <p className="text-slate-500 text-center mt-12">
-              {isListening ? 'Listening for audio...' : 'Start visualizer to see transcription'}
+            <p className="transcription-content placeholder">
+              {isListening ? 'Listening for audio...' : 'Click start to begin transcribing'}
             </p>
           )}
           <div ref={transcriptionEndRef} />
-        </div>
+        </section>
 
-        {/* Control Button */}
-        <div className="flex flex-col items-center gap-4">
+        <div className="controls">
           {!isListening ? (
-            <button
-              onClick={handleStart}
-              className="px-10 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full font-bold text-lg shadow-lg hover:scale-105 hover:shadow-cyan-500/25 transition-all active:scale-95"
-            >
-              Start Visualizer
+            <button onClick={handleStart} className="btn-primary">
+              Start Session
             </button>
           ) : (
-            <button
-              onClick={handleStop}
-              className="px-10 py-4 bg-slate-800 rounded-full font-bold text-lg border border-white/10 hover:bg-slate-700 transition-all active:scale-95"
-            >
-              Stop Visualizer
+            <button onClick={handleStop} className="btn-secondary">
+              End Session
             </button>
           )}
 
-          {micError && <p className="text-rose-400 text-sm mt-2">Mic Error: {micError}</p>}
+          {micError && <p style={{ color: '#ff6b6b', marginTop: '1rem', fontSize: '0.9rem' }}>{micError}</p>}
         </div>
+
+        <footer className="footer">
+          Prepxl v1.0 • Mock Engine Active
+        </footer>
       </main>
-
-      {/* Footer Info */}
-      <footer className="absolute bottom-8 text-slate-600 text-xs uppercase tracking-widest">
-        Powered by Prepxl Architecture • Gemini Mock Stream Active
-      </footer>
-
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 10px;
-        }
-      `}</style>
     </div>
   );
 }
