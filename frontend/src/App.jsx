@@ -99,45 +99,50 @@ function App() {
           </div>
         </header>
 
-        <section className="transcription-box">
-          {transcription ? (
-            <p className="transcription-content">
-              {transcription.trim()}
-            </p>
-          ) : (
-            <p className="transcription-content placeholder">
-              {isListening ? 'Listening for audio...' : 'Click start to begin transcribing'}
-            </p>
-          )}
-          <div ref={transcriptionEndRef} />
-        </section>
-
-        <div className="controls">
-          {!isListening ? (
-            <button onClick={handleStart} className="btn-primary">
-              Start Session
-            </button>
-          ) : (
-            <button onClick={handleStop} className="btn-secondary">
-              End Session
-            </button>
-          )}
-
-          {micError && (
-            <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-              <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
-                ⚠️ {micError}
+        <div className="bottom-controls">
+          <section className="transcription-box">
+            {transcription ? (
+              <p className="transcription-content">
+                {transcription.trim()}
               </p>
-              <p style={{ color: '#94a3b8', fontSize: '0.75rem' }}>
-                Please allow microphone access in your browser settings.
+            ) : (
+              <p className="transcription-content placeholder">
+                {isListening ? 'Listening for audio...' : 'Click start to begin transcribing'}
               </p>
-            </div>
-          )}
+            )}
+            <div ref={transcriptionEndRef} />
+          </section>
+
+          <div className="controls">
+            {!isListening ? (
+              <button onClick={handleStart} className="btn-primary">
+                Start Session
+              </button>
+            ) : (
+              <button onClick={handleStop} className="btn-secondary">
+                End Session
+              </button>
+            )}
+
+            {micError && (
+              <div style={{ marginTop: '1rem', textAlign: 'center', background: 'rgba(255,0,0,0.1)', padding: '1rem', borderRadius: '1rem', border: '1px solid rgba(255,0,0,0.2)' }}>
+                <p style={{ color: '#ff6b6b', fontSize: '0.95rem', fontWeight: '600', marginBottom: '0.5rem' }}>
+                  ⚠️ access denied
+                </p>
+                <p style={{ color: '#e2e8f0', fontSize: '0.85rem' }}>
+                  Since you enabled browser permission, this is likely blocked by <strong>Windows/System Settings</strong>.
+                </p>
+                <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: '0.5rem' }}>
+                  Go to <em>Settings {'>'} Privacy {'>'} Microphone</em> and allow desktop apps.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <footer className="footer">
+            Prepxl v1.0 • Mock Engine Active
+          </footer>
         </div>
-
-        <footer className="footer">
-          Prepxl v1.0 • Mock Engine Active
-        </footer>
       </main>
     </div>
   );
