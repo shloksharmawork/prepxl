@@ -1,0 +1,20 @@
+# Java / Maven
+backend/target/
+backend/*.log
+.mtj.tmp/
+*.class
+*.jar
+*.war
+*.ear
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.log
