@@ -58,8 +58,10 @@ body {
 
 /* Glassmorphism Main UI - Centered Card */
 .ui-main {
-  position: relative;
-  inset: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   z-index: 10;
   display: flex;
   flex-direction: column;
