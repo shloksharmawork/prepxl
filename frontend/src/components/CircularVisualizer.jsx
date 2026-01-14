@@ -19,6 +19,21 @@ const CircularVisualizer = ({ analyser, isListening }) => {
         handleResize();
         window.addEventListener('resize', handleResize);
 
+        // Helper for rounded rectangles on canvas
+        const roundRect = (ctx, x, y, width, height, radius) => {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        };
+
         const renderFrame = () => {
             const width = canvas.width / (window.devicePixelRatio || 1);
             const height = canvas.height / (window.devicePixelRatio || 1);
@@ -86,7 +101,7 @@ const CircularVisualizer = ({ analyser, isListening }) => {
                 ctx.shadowColor = 'rgba(6, 182, 212, 0.5)';
 
                 // Rounded bars
-                this.roundRect(ctx, -barWidth / 2, pulseRadius, barWidth, barHeight, 2);
+                roundRect(ctx, -barWidth / 2, pulseRadius, barWidth, barHeight, 2);
                 ctx.fill();
 
                 ctx.rotate(-angle);
@@ -94,21 +109,6 @@ const CircularVisualizer = ({ analyser, isListening }) => {
             ctx.restore();
 
             animationRef.current = requestAnimationFrame(renderFrame);
-        };
-
-        // Helper for rounded rectangles on canvas
-        renderFrame.roundRect = (ctx, x, y, width, height, radius) => {
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
         };
 
         renderFrame();
