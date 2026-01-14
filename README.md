@@ -73,9 +73,17 @@ Planning to record a walkthrough? Follow our professional script:
 
 ## 🌐 Deployment
 
-- **Backend:** Deployed on Render with WebSocket (WSS) support
-- **Frontend:** Deployed on Render (HTTPS)
-- **Security:** HTTPS + WSS ensures microphone access works in modern browsers
-- **Transcription:** Mock mode enabled due to Gemini API quota limits
+The application is architected for containerized deployment, ensuring a consistent environment across multiple hosting providers.
 
-Live URLs are available for reviewer testing.
+- **Backend:** Deployed on **Render** using **Docker** for a standardized Java 17 LTS runtime.
+- **Frontend:** Deployed on Render as a static site.
+- **Security:** HTTPS + WSS ensures microphone access works in modern browsers.
+- **Transcription:** Mock mode enabled due to Gemini API quota limits.
+
+### Dockerized Backend
+To deploy the backend to any Docker-capable platform:
+```bash
+cd backend
+docker build -t prepxl-backend .
+docker run -p 8080:8080 prepxl-backend
+```
