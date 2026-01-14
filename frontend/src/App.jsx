@@ -2,7 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import CircularVisualizer from './components/CircularVisualizer';
 import { useAudioAnalyzer } from './hooks/useAudioAnalyzer';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8080/transcribe';
+const getWsUrl = () => {
+  const envUrl = import.meta.env.VITE_WS_URL;
+  if (envUrl) return envUrl;
+
+  // Auto-construct from window location or fallback to localhost
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  return `${protocol}//localhost:8080/transcribe`;
+};
+
+const WS_URL = getWsUrl();
 
 function App() {
   const [transcription, setTranscription] = useState('');
@@ -16,7 +25,7 @@ function App() {
   }, [transcription]);
 
   const connectWebSocket = () => {
-    console.log('Connecting to WebSocket...');
+    console.log(`Connecting to WebSocket: ${WS_URL}`);
     const ws = new WebSocket(WS_URL);
     websocketRef.current = ws;
 
@@ -56,8 +65,12 @@ function App() {
   const { startListening, stopListening, isListening, analyser, error: micError } = useAudioAnalyzer(onAudioData);
 
   const handleStart = async () => {
-    await startListening();
-    connectWebSocket();
+    try {
+      await startListening();
+      connectWebSocket();
+    } catch (e) {
+      console.error('Start failed', e);
+    }
   };
 
   const handleStop = () => {
@@ -110,7 +123,16 @@ function App() {
             </button>
           )}
 
-          {micError && <p style={{ color: '#ff6b6b', marginTop: '1rem', fontSize: '0.9rem' }}>{micError}</p>}
+          {micError && (
+            <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+              <p style={{ color: '#ff6b6b', fontSize: '0.9rem', marginBottom: '0.25rem' }}>
+                ⚠️ {micError}
+              </p>
+              <p style={{ color: '#94a3b8', fontSize: '0.75rem' }}>
+                Please allow microphone access in your browser settings.
+              </p>
+            </div>
+          )}
         </div>
 
         <footer className="footer">
